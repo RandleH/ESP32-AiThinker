@@ -16,12 +16,13 @@
 #include "../bsp/sdio.h"
 #include "../bsp/i2s.h"
 #include "../bsp/misc.h"
+#include "../bsp/wifi.h"
 
 #include "../bsp/dev/led.h"
 #include "../bsp/dev/sdcard.h"
 #include "../bsp/dev/camera.h" 
 
-
+#include "esp_err.h"
 
 #include "esp_heap_caps.h"
 
@@ -33,13 +34,19 @@ void app_main(void){
     rh_led__off( BOARD_LED );
     rh_led__off( FLUSH_LED );
 
-    rh_sdio__init();  // 没有插SD卡会进死循环
+    // rh_sdio__init();  // 没有插SD卡会进死循环
 
-    rh_camera__init();
-    rh_camera__start();
+    // rh_camera__init();
+    // rh_camera__start();
     // rh_camera__save_bmp("/sdcard/test.bmp");
-    rh_camera__save_raw("/sdcard/test.bin");
-    rh_camera__save_jpg("/sdcard/test.jpg");
+    // rh_camera__save_raw("/sdcard/test.bin");
+    // rh_camera__save_jpg("/sdcard/test.jpg");
+    int probe = 0;
+    probe = rh_wifi__init( "RandleH-WiFi", "123123", 1, 4 );
+    // while(probe); //  FAILED
+
+    probe = rh_wifi__mode_ap();
+    // while(probe); //  FAILED
 
     while (1) {
         rh_led__toggle( BOARD_LED);

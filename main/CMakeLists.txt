@@ -3,6 +3,8 @@ idf_component_register(SRCS "main.c"
                             "../bsp/sdio.c"
                             "../bsp/i2s.c"
                             "../bsp/misc.c"
+                            "../bsp/wifi.c"
+                            
                             "../bsp/dev/led.c"
                             "../bsp/dev/sdcard.c"
                             "../bsp/dev/camera.c"
