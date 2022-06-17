@@ -3,8 +3,8 @@
 
 
 
-void rh_sdio__init    (void);
-void rh_sdio__unmount (void);
+int  rh_sdio__init    (void);
+int  rh_sdio__unmount (void);
 
 
 #endif

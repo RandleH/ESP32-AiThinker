@@ -8,7 +8,7 @@
 int  rh_wifi__init( const char *name, const char *password, int channel, size_t maximum);
 
 int  rh_wifi__mode_ap   ( void );
-int  rh_wifi__mode_sta  ( void );//
+int  rh_wifi__mode_sta  ( void );
 int  rh_wifi__mode_apsta( void );//
 
 

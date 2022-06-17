@@ -15,7 +15,8 @@ Parameter notation table
 
 
 void  rh_camera__init        (void);
-int   rh_camera__start       (void);//
+int   rh_camera__start       (void);
+int   rh_camera__stop        (void);
 void *rh_camera__capture     (void *__buf, size_t __buf_size, size_t *__actual_size);
 
 int   rh_camera__save_raw    (const char *__pf);

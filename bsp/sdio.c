@@ -7,12 +7,12 @@
 
 static sdmmc_card_t *card;
 
-void rh_sdio__init  (void){
+int rh_sdio__init  (void){
     sdmmc_host_t        host              = SDMMC_HOST_DEFAULT();         
     sdmmc_slot_config_t slot_config       = SDMMC_SLOT_CONFIG_DEFAULT();
                         slot_config.width = 4;
                         slot_config.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
-                        // No need to config
+                        // 以下无需配置 ESP32只有一个SD Slot
                         // "SOC_SDMMC_USE_GPIO_MATRIX" is only for ESP32 S3
                         // slot_config.d0    = (gpio_num_t)SDCARD_D0_GPIO;
                         // slot_config.d1    = (gpio_num_t)SDCARD_D1_GPIO;
@@ -32,14 +32,24 @@ void rh_sdio__init  (void){
     };                    
 
     esp_err_t ret = esp_vfs_fat_sdmmc_mount( SDCARD_MOUNT_POINT, &host, &slot_config, &mount_config, &card );
-
-    while( ret!= ESP_OK );
+    
+    {// 初始化SD Card挂节点, 尝试10次, 若失败则返回
+        size_t count = 10;
+        while(--count && ret!=ESP_OK){
+            ret = esp_vfs_fat_sdmmc_mount( SDCARD_MOUNT_POINT, &host, &slot_config, &mount_config, &card );
+        }
+    }
+    return ret!=ESP_OK;
 }
 
 
-void rh_sdio__unmount(void){
-    esp_vfs_fat_sdcard_unmount( SDCARD_MOUNT_POINT, card);
+int  rh_sdio__unmount(void){
+    esp_err_t ret = esp_vfs_fat_sdcard_unmount( SDCARD_MOUNT_POINT, card);
+    if( ret!= ESP_OK ){
+        return 1;
+    }
     card = NULL;
+    return 0;
 }
 
 

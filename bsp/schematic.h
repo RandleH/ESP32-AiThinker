@@ -2,6 +2,9 @@
 #ifndef RH_SCHEMATIC_H
 #define RH_SCHEMATIC_H
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 #define BOARD_LED_GPIO       (33U)
 #define FLUSH_LED_GPIO       (4U)
@@ -39,6 +42,18 @@
 #define CAMERA_PCLK_GPIO     (22U)
 
 #define CAMERA_XCLK_FREQ     (10000000U)
+
+
+
+#include "esp_log.h"
+#define RH_CONSOLE( format, ...)     ESP_LOGE("RH:", format, ##__VA_ARGS__) 
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
 
 #endif
 

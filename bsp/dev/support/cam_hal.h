@@ -15,7 +15,7 @@
 #pragma once
 
 #include "esp_camera.h"
-
+#include "freertos/FreeRTOS.h"
 
 #ifdef __cplusplus
 extern "C" {

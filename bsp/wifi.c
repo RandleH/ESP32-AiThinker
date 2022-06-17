@@ -7,6 +7,7 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include  "nvs_flash.h"
+#include "./schematic.h"
 
 struct{
     const char *ssid;
@@ -35,7 +36,7 @@ int  rh_wifi__init( const char *name, const char *password, int channel, size_t 
 
     esp_netif_init();
     esp_event_loop_create_default();
-    esp_netif_create_default_wifi_ap();
+    
     wifi_init_config_t wifi_init_cfg = {  // WIFI_INIT_CONFIG_DEFAULT()
         .event_handler         = &esp_event_send_internal, \
         .osi_funcs             = &g_wifi_osi_funcs, \
@@ -67,12 +68,11 @@ int  rh_wifi__init( const char *name, const char *password, int channel, size_t 
     cache.isValid = true;
     cache.channel = channel;
     cache.ssid    = strcpy( calloc(1, strlen(name)+1)    , name );
-    if( !password )
+    if( password!=NULL )
         cache.password = strcpy( calloc(1, strlen(password)+1), password );
     else
         cache.password = NULL;
     cache.maximum = maximum;
-
 
     esp_event_handler_instance_register(WIFI_EVENT,
                                         ESP_EVENT_ANY_ID,
@@ -83,17 +83,18 @@ int  rh_wifi__init( const char *name, const char *password, int channel, size_t 
     return ret!=ESP_OK;
 }
 
-
 int  rh_wifi__mode_ap   (void){
     if( !cache.isValid ) return -1;
+    esp_netif_create_default_wifi_ap();
     esp_err_t ret = esp_wifi_set_mode( WIFI_MODE_AP );
     if( ret!=ESP_OK ){
-        // while(1);    FAILED
         return 1;
     } 
 
     wifi_config_t wifi_config = {
         .ap = {
+            .ssid           = {0},
+            .password       = {0},
             .ssid_len       = strlen(cache.ssid),
             .channel        = cache.channel,
             .max_connection = cache.maximum,
@@ -101,15 +102,23 @@ int  rh_wifi__mode_ap   (void){
         },
     };
     strcpy( (char*)wifi_config.ap.ssid, cache.ssid);
-    if( cache.password!=NULL )
+    if( cache.password!=NULL ){
         strcpy( (char*)wifi_config.ap.password, cache.password );
+        RH_CONSOLE("Setting the WiFi password:%s\n", wifi_config.ap.password);
+    }
 
     if( cache.password==NULL || strlen(cache.password) == 0) {
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
+        RH_CONSOLE("No password\n");
     }
     if( ESP_OK!=esp_wifi_set_config(WIFI_IF_AP, &wifi_config)) return 1;
     if( ESP_OK!=esp_wifi_start()) return 1;
 
+    return 0;
+}
+
+int rh_wifi__mode__sta  ( const char *name, const char *password){
+    
     return 0;
 }
 
@@ -131,7 +140,6 @@ int rh_wifi__connect    (void){
     
     return esp_wifi_connect()!=ESP_OK;
 }
-
 
 
 

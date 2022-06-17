@@ -6,6 +6,7 @@
 
 #include "./support/esp_camera.h"
 #include "./support/sensor.h"
+#include "./support/cam_hal.h"
 
 
 static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, framesize_t frame_size, uint8_t fb_count)
@@ -68,9 +69,14 @@ void  rh_camera__init        (void){
 }
 
 int   rh_camera__start       (void){
+    cam_start();
     return 0;
 }
 
+int   rh_camera__stop        (void){
+    cam_stop();
+    return 0;
+}
 
 void *rh_camera__capture (void *__buf, size_t __buf_size, size_t *__actual_size){
     if( !__buf ) return NULL;
@@ -147,8 +153,8 @@ int rh_camera__save_jpg    (const char *__pf){
     camera_fb_t* frame = esp_camera_fb_get();
     if( !frame ) return 1;
 
-    int     comp = 5;
-    uint8_t *buf = NULL;
+    // int     comp = 5;
+    // uint8_t *buf = NULL;
     switch( frame->format ){
         case PIXFORMAT_JPEG:
             rh_sdcard__echo( __pf, "w", (const char*)frame->buf, frame->len); 
@@ -160,3 +166,11 @@ int rh_camera__save_jpg    (const char *__pf){
     return 0;
 }
 
+
+
+void rh_camera__test(void){
+    // rh_camera__start();
+    // rh_camera__save_bmp("/sdcard/test.bmp");
+    // rh_camera__save_raw("/sdcard/test.bin");
+    // rh_camera__save_jpg("/sdcard/test.jpg");
+}

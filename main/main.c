@@ -26,27 +26,29 @@
 
 #include "esp_heap_caps.h"
 
-
+static const char* TAG = "MAIN";
 void app_main(void){
+    RH_CONSOLE("APP starts!!!");
+
 
     rh_gpio__init();
     
     rh_led__off( BOARD_LED );
     rh_led__off( FLUSH_LED );
 
-    // rh_sdio__init();  // 没有插SD卡会进死循环
+    
 
-    // rh_camera__init();
-    // rh_camera__start();
-    // rh_camera__save_bmp("/sdcard/test.bmp");
-    // rh_camera__save_raw("/sdcard/test.bin");
-    // rh_camera__save_jpg("/sdcard/test.jpg");
-    int probe = 0;
-    probe = rh_wifi__init( "RandleH-WiFi", "123123", 1, 4 );
-    // while(probe); //  FAILED
+    rh_sdio__init();  // 没有插SD卡会进死循环
 
-    probe = rh_wifi__mode_ap();
-    // while(probe); //  FAILED
+    rh_camera__init();
+    rh_camera__stop();
+
+    
+    rh_wifi__init( "RandleH-WiFi", "123123123", 1, 4 );
+
+    rh_wifi__mode_ap();
+
+    
 
     while (1) {
         rh_led__toggle( BOARD_LED);
