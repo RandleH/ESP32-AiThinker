@@ -46,12 +46,15 @@ extern "C"{
 
 
 #include "esp_log.h"
-#define RH_CONSOLE( format, ...)     ESP_LOGE("RH:", format, ##__VA_ARGS__) 
+#define RH_CONSOLE( format, ...)     ESP_LOGE("RH", format, ##__VA_ARGS__) 
 
 
 #ifdef __cplusplus
 }
 #endif
+
+
+
 
 
 

@@ -16,6 +16,9 @@ idf_component_register(SRCS "main.c"
                             "../bsp/dev/support/xclk.c"
                             "../bsp/dev/support/sccb.c"
                             "../bsp/dev/support/ov2640.c"
+
+                            "../app/event.c"
+                            "../app/tcpip.c"
                             
 
 

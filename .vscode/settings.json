@@ -3,6 +3,7 @@
     "idf.port": "/dev/cu.wchusbserial1410",
     "idf.flashType": "UART",
     "files.associations": {
-        "esp_err.h": "c"
+        "esp_err.h": "c",
+        "esp_event.h": "c"
     }
 }

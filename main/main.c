@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/gpio.h"
+
 #include "esp_log.h"
 #include "sdkconfig.h"
 
@@ -22,34 +22,45 @@
 #include "../bsp/dev/sdcard.h"
 #include "../bsp/dev/camera.h" 
 
+#include "../app/event.h"
+#include "../app/tcpip.h"
+
 #include "esp_err.h"
+#include "esp_event.h"
 
-#include "esp_heap_caps.h"
 
-static const char* TAG = "MAIN";
 void app_main(void){
-    RH_CONSOLE("APP starts!!!");
-
-
+    RH_CONSOLE("APP starts!!!"); 
+/*===============================================================
+初始化 物理层
+===============================================================*/    
     rh_gpio__init();
-    
-    rh_led__off( BOARD_LED );
-    rh_led__off( FLUSH_LED );
-
-    
-
-    rh_sdio__init();  // 没有插SD卡会进死循环
-
+    rh_wifi__init();
+    rh_sdio__init();
     rh_camera__init();
-    rh_camera__stop();
-
     
-    rh_wifi__init( "RandleH-WiFi", "123123123", 1, 4 );
+/*===============================================================
+初始化 应用层
+===============================================================*/ 
+    rh_event__init();
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__READY               , rh_wifi__handler_0  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__SCAN_DONE           , rh_wifi__handler_1  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_START           , rh_wifi__handler_2  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_STOP            , rh_wifi__handler_3  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__AP_START            , rh_wifi__handler_12 );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__AP_STOP             , rh_wifi__handler_13 );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__AP_STACONNECTED     , rh_wifi__handler_14 );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__AP_STADISCONNECTED  , rh_wifi__handler_15 );
 
-    rh_wifi__mode_ap();
-
+    rh_event__insert( RH_APP_EVENT_TCPIP, RH_TCPIP_EVENTID__STA_GOT_IP , rh_tcpip__handler_0  );
     
-
+/*===============================================================
+启动 物理层
+===============================================================*/ 
+    rh_wifi__mode_sta( "SUES", "TripleUS2637", 1);
+    rh_wifi__start();
+    
+    
     while (1) {
         rh_led__toggle( BOARD_LED);
         vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
