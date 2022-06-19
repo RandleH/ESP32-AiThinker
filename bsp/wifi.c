@@ -10,7 +10,7 @@
 #include "./schematic.h"
 
 
-int  rh_wifi__init(void){
+int rh_wifi__init(void){
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
       ESP_ERROR_CHECK(nvs_flash_erase());
@@ -47,7 +47,7 @@ int  rh_wifi__init(void){
     return ret!=ESP_OK;
 }
 
-int  rh_wifi__mode_ap   ( const char* ssid, const char* password, int channel){
+int rh_wifi__mode_ap   ( const char* ssid, const char* password, int channel){
     if( ESP_OK!=esp_netif_init())                return 1;
     esp_netif_create_default_wifi_ap();
 
@@ -78,42 +78,40 @@ int  rh_wifi__mode_ap   ( const char* ssid, const char* password, int channel){
     return 0;
 }
 
-int rh_wifi__mode_sta  ( const char *name, const char *password){
-    if( ESP_OK!=esp_netif_init())                return 1;
+int rh_wifi__mode_sta  ( const char *ssid, const char *password){
+    if( ESP_OK!=esp_netif_init() )   return 1;
     esp_netif_create_default_wifi_sta();
-    // esp_event_handler_instance_t instance_any_id;
-    // esp_event_handler_instance_t instance_got_ip;
-    // if( ESP_OK!=esp_event_handler_instance_register( WIFI_EVENT, ESP_EVENT_ANY_ID   , &wifi_event_handler, NULL, &instance_any_id)) return 1;
-    // if( ESP_OK!=esp_event_handler_instance_register( IP_EVENT  , IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, &instance_got_ip)) return 1;
     
-    if( ESP_OK!=esp_wifi_set_mode(WIFI_MODE_STA)      )   {RH_CONSOLE("wifi sta mode failed");return 1;}
-    if( !name || strlen(name)==0 || strlen(name)>=32 )   return 1;
-
-    wifi_config_t wifi_config = {
+    wifi_config_t cfg = {
         .sta = {
             .ssid     = {0},
             .password = {0},
-            /* Setting a password implies station will connect to all security modes including WEP/WPA.
-             * However these modes are deprecated and not advisable to be used. Incase your Access point
-             * doesn't support WPA2, these mode can be enabled by commenting below line */
-	        .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
         },
     };
-    if( password!=NULL && strlen(password)!=0 ) {
-        strcpy( (char*)wifi_config.sta.password, password);
-        RH_CONSOLE("Wifi: name=%s", name);
-        RH_CONSOLE("Wifi: password=%s", password);
-    }else{
-        RH_CONSOLE("No password");
+
+    strcpy( (char*)cfg.sta.ssid, ssid);
+    strcpy( (char*)cfg.sta.password, password);
+
+    if( ESP_OK!=esp_wifi_set_mode(WIFI_MODE_STA) ){
+        RH_CONSOLE("Failed to set wifi mode.");
+        return 1;
     }
 
-    if( ESP_OK!=esp_wifi_set_config(WIFI_IF_STA, &wifi_config)) return 1;
+    if( ESP_OK!=esp_wifi_set_config(WIFI_IF_STA, &cfg) ){
+        RH_CONSOLE("Failed to set wifi interface.");
+        return 1;
+    }
 
     return 0;
 }
 
 int rh_wifi__start      (void){
-    return esp_wifi_start()!=ESP_OK;
+    if( ESP_OK!=esp_wifi_start()){
+        RH_CONSOLE("Failed to start wifi.");
+        return 1;
+    }
+    return 0;
 }
 
 int rh_wifi__stop       (void){
@@ -149,6 +147,11 @@ int rh_wifi__send       (void* buf, size_t len){
     return ESP_OK!=esp_wifi_80211_tx( ifx, buf, len, false);
 }
 
+
+
+
+// 以下为Wi-Fi事件触发后, 应对函数
+// 详情请看ESP官方文档目录: API Guides->Wi-Fi Driver
 typedef struct{
     void*             ev_handler_arg;
     esp_event_base_t  ev_base; 
@@ -157,7 +160,7 @@ typedef struct{
 }callback_handler_t;
 
 void rh_wifi__handler_0  (void* args){    // Wi-Fi准备就绪
-    RH_CONSOLE("Handler 0");
+    RH_CONSOLE("%s:", __func__);
     wifi_mode_t mode = WIFI_MODE_NULL;
     esp_wifi_get_mode(&mode);
 
@@ -168,8 +171,8 @@ void rh_wifi__handler_0  (void* args){    // Wi-Fi准备就绪
     esp_wifi_get_config( WIFI_IF_STA, &cfg);
     esp_wifi_scan_start( &cfg, false);
 }
-void rh_wifi__handler_1  (void* args){    // 扫描AP完成
-    RH_CONSOLE("Handler 1");
+void rh_wifi__handler_1  (void* args){    // 扫描AP完成 事件触发源: `esp_wifi_scan_init`
+    RH_CONSOLE("%s:", __func__);
     esp_wifi_scan_stop();
 
     uint16_t num=0;
@@ -184,30 +187,39 @@ void rh_wifi__handler_1  (void* args){    // 扫描AP完成
     }
     free(list);
 }
-void rh_wifi__handler_2  (void* args){    // 作为STA开始工作
-    RH_CONSOLE("Handler 2");
+void rh_wifi__handler_2  (void* args){    // 作为STA开始工作 事件触发源: `esp_wifi_start()`
+    RH_CONSOLE("%s:", __func__);
     RH_CONSOLE("Try to connect to the AP...");
-    if( ESP_OK!=esp_wifi_connect() )
+    esp_err_t ret = esp_wifi_connect();
+    size_t retry = 0;
+    while( ret!=ESP_OK && retry++ <5 ){
         RH_CONSOLE("Connect failed");
+        char buf[256] = {0};
+        RH_CONSOLE("Reason:%s", esp_err_to_name_r( ret, buf, 256 ));
+
+        ret = esp_wifi_connect();
+    }
+        
 }
-void rh_wifi__handler_3  (void* args){    // 作为STA结束工作
-    RH_CONSOLE("Handler 3");
+void rh_wifi__handler_3  (void* args){    // 作为STA结束工作 事件触发源: `esp_wifi_stop()`
+    RH_CONSOLE("%s:", __func__);
     RH_CONSOLE("Connect to the AP failed");
 }
-void rh_wifi__handler_4  (void* args){    // 作为STA连接上AP
-    RH_CONSOLE("Handler 4");
+void rh_wifi__handler_4  (void* args){    // 作为STA连接上AP 事件触发源: `esp_wifi_connect()`
+    RH_CONSOLE("%s:", __func__);
 }
-void rh_wifi__handler_5  (void* args){    // 作为STA断开AP
-    RH_CONSOLE("Handler 5");
+void rh_wifi__handler_5  (void* args){    // 作为STA断开AP 事件触发源: `esp_wifi_disconnect()` | `esp_wifi_stop()` | `esp_wifi_connect()`但连接失败
+    RH_CONSOLE("%s:", __func__);
+    esp_wifi_connect();
 }
 void rh_wifi__handler_6  (void* args){    // 
-    RH_CONSOLE("Handler x");
+    RH_CONSOLE("%s:", __func__);
 }
 void rh_wifi__handler_7  (void* args){    // 作为STA从AP获取了IP
-    RH_CONSOLE("Handler 7");
+    RH_CONSOLE("%s:", __func__);
 }
 void rh_wifi__handler_8  (void* args){    // 作为STA丢到了IP(错误)
-    RH_CONSOLE("Handler 8");
+    RH_CONSOLE("%s:", __func__);
 }
 void rh_wifi__handler_9  (void* args){
     RH_CONSOLE("Handler 9");

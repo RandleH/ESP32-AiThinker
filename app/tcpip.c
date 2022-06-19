@@ -10,7 +10,7 @@ typedef struct{
 }callback_handler_t;
 
 void rh_tcpip__handler_0(void* args){
-	RH_CONSOLE("TCPIP Handler 0\n");
+	RH_CONSOLE("%s:", __func__);
 	callback_handler_t *args_ = (callback_handler_t*)args;
     ip_event_got_ip_t* event = (ip_event_got_ip_t*)args_->ev_data;
     RH_CONSOLE("got ip:%d.%d.%d.%d\n", IP2STR(&event->ip_info.ip));

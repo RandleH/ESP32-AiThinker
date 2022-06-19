@@ -47,6 +47,13 @@ void app_main(void){
     rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__SCAN_DONE           , rh_wifi__handler_1  );
     rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_START           , rh_wifi__handler_2  );
     rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_STOP            , rh_wifi__handler_3  );
+
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_CONNECTED       , rh_wifi__handler_4  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_DISCONNECTED    , rh_wifi__handler_5  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_AUTHMODE_CHANGE , rh_wifi__handler_6  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_WPS_ER_SUCCESS  , rh_wifi__handler_7  );
+    rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__STA_WPS_ER_FAILED   , rh_wifi__handler_8  );
+
     rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__AP_START            , rh_wifi__handler_12 );
     rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__AP_STOP             , rh_wifi__handler_13 );
     rh_event__insert( RH_APP_EVENT_WIFI, RH_WIFI_EVENTID__AP_STACONNECTED     , rh_wifi__handler_14 );
@@ -59,7 +66,6 @@ void app_main(void){
 ===============================================================*/ 
     rh_wifi__mode_sta( "SUES", "TripleUS2637", 1);
     rh_wifi__start();
-    
     
     while (1) {
         rh_led__toggle( BOARD_LED);
