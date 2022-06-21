@@ -1,3 +1,4 @@
+#include <stdint.h>
 #ifndef RH_TCPIP_H
 #define RH_TCPIP_H
 
@@ -13,6 +14,7 @@
 #define RH_TCPIP_EVENTID__PPP_GOT_IP              6 
 #define RH_TCPIP_EVENTID__PPP_LOST_IP             7 
 
+void rh_tcp__as_server( uint16_t port);
 
 void rh_tcpip__handler_0(void* args);
 void rh_tcpip__handler_1(void* args);

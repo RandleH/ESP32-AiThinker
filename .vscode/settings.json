@@ -4,6 +4,9 @@
     "idf.flashType": "UART",
     "files.associations": {
         "esp_err.h": "c",
-        "esp_event.h": "c"
+        "esp_event.h": "c",
+        "tcpip.h": "c",
+        "esp_http_server.h": "c",
+        "typeinfo": "c"
     }
 }

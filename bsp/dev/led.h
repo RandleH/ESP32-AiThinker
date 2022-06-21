@@ -5,6 +5,8 @@ void rh_led__on     ( int led);
 void rh_led__off    ( int led);
 void rh_led__toggle ( int led);
 
+
+void rh_led__blink(void*);
 #endif
 
 

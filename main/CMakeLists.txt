@@ -19,7 +19,8 @@ idf_component_register(SRCS "main.c"
 
                             "../app/event.c"
                             "../app/tcpip.c"
-                            
+                            "../app/task.c"
+                            "../app/http.c"
 
 
 

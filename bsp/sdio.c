@@ -8,6 +8,7 @@
 static sdmmc_card_t *card;
 
 int rh_sdio__init  (void){
+    RH_CONSOLE("\n%s:", __func__);
     sdmmc_host_t        host              = SDMMC_HOST_DEFAULT();         
     sdmmc_slot_config_t slot_config       = SDMMC_SLOT_CONFIG_DEFAULT();
                         slot_config.width = 4;
@@ -39,7 +40,12 @@ int rh_sdio__init  (void){
             ret = esp_vfs_fat_sdmmc_mount( SDCARD_MOUNT_POINT, &host, &slot_config, &mount_config, &card );
         }
     }
-    return ret!=ESP_OK;
+    if( ret!=ESP_OK ){
+        RH_CONSOLE("Mount point at sd card failed.");
+        return 1;
+    }
+    RH_CONSOLE("Success");
+    return 0;
 }
 
 
