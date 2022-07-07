@@ -30,6 +30,11 @@
 #include "esp_err.h"
 #include "esp_event.h"
 
+/*===============================================================
+云数据库信息
+===============================================================*/ 
+// url: https://esp32-wifi-monitor-default-rtdb.firebaseio.com/
+// key: AIzaSyANzso7XRzHlsUhhQcOy51oMihIm-43-KY
 
 void app_main(void){
     RH_CONSOLE("APP starts!!!"); 

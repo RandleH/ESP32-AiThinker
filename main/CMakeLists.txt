@@ -1,3 +1,6 @@
+
+
+
 idf_component_register(SRCS "main.c"
                             "../bsp/gpio.c"
                             "../bsp/sdio.c"
@@ -22,6 +25,7 @@ idf_component_register(SRCS "main.c"
                             "../app/task.c"
                             "../app/http.c"
 
+                        #     "../thirdparty/FirebaseESP32/src/Firebase.cpp"   
 
 
                     INCLUDE_DIRS ".")

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Single toggle</title>
+	<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link   rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.4/css/all.css">
+	<script src="https://kit.fontawesome.com/90374bb161.js" crossorigin="anonymous"></script>
+	<script src="script.js"></script>
+	<link   rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+    <div class="ctrl">
+
+        <div class="ctrl-Airplane">
+
+        	<div class="ctrl-icon"> <i class="fa-solid fa-plane fa-5x" style="color:black"></i></div>
+        	<div class="ctrl-text"> Airplane Mode </div>
+
+            <div class="toggle on"        id="tog-on-Airplane">
+            	<div class="inner-circle" id="tog-on-Airplane"></div>
+            </div>
+            <div class="toggle off"       id="tog-off-Airplane">
+                <div class="inner-circle" id="tog-off-Airplane"></div>
+            </div>
+
+        </div>
+
+
+
+        <div class="ctrl-WiFi">
+        	<div class="ctrl-icon"><i class="fa-solid fa-wifi fa-5x"></i> </div>
+        	<div class="ctrl-text"> Wi-Fi </div>
+            <div class="toggle on"        id="tog-on-wifi">
+            	<div class="inner-circle" id="tog-on-wifi"></div>
+            </div>
+            <div class="toggle off"       id="tog-off-wifi">
+                <div class="inner-circle" id="tog-off-wifi"></div>
+            </div>
+        </div>
+
+        <div class="ctrl-BLE">
+        	<div class="ctrl-icon"><i class="fa-brands  fa-bluetooth fa-5x"></i></div>
+        	<div class="ctrl-text"> Bluetooth </div>
+            <div class="toggle on"        id="tog-on-BLE">
+            	<div class="inner-circle" id="tog-on-BLE"></div>
+            </div>
+            <div class="toggle off"       id="tog-off-BLE">
+                <div class="inner-circle" id="tog-off-BLE"></div>
+            </div>
+        </div>
+
+        <div class="ctrl-LED">
+        	<div class="ctrl-icon"><i class="fa-solid fa-lightbulb fa-5x"></i></div>
+        	<div class="ctrl-text"> Board Led </div>
+            <div class="toggle on"        id="tog-on-led">
+                <div class="inner-circle" id="tog-on-led"></div>
+            </div>
+            <div class="toggle off"       id="tog-off-led">
+                <div class="inner-circle" id="tog-off-led"></div>
+            </div>
+        </div>
+
+        <div class="ctrl-cam">
+            <div class="ctrl-icon"><i class="fa-solid fa-camera fa-5x"></i></div>
+            <div class="ctrl-text"> Camera </div>
+            <div class="readmore"><i class="fa-solid fa-angle-right fa-5x"></i></div>
+        </div>
+
+
+    </div>
+
+
+</body>
+</html>
+
+

@@ -1,7 +1,7 @@
 {
     "idf.adapterTargetName": "esp32",
-    "idf.port": "/dev/cu.wchusbserial1420",
-    "idf.flashType": "UART",
+    "idf.port": "/dev/cu.usbserial-201",
+    "idf.flashType": "JTAG",
     "files.associations": {
         "esp_err.h": "c",
         "esp_event.h": "c",
