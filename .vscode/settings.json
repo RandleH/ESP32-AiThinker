@@ -1,12 +1,6 @@
 {
-    "idf.adapterTargetName": "esp32",
-    "idf.port": "/dev/cu.usbserial-201",
-    "idf.flashType": "JTAG",
+    "cmake.configureOnOpen": true,
     "files.associations": {
-        "esp_err.h": "c",
-        "esp_event.h": "c",
-        "tcpip.h": "c",
-        "esp_http_server.h": "c",
-        "typeinfo": "c"
+        "rh_common.h": "c"
     }
 }

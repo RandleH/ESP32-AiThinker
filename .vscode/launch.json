@@ -1,7 +1,44 @@
+// AUTOMATICALLY GENERATED FILE. PLEASE DO NOT MODIFY IT MANUALLY
+//
+// PIO Unified Debugger
+//
+// Documentation: https://docs.platformio.org/page/plus/debugging.html
+// Configuration: https://docs.platformio.org/page/projectconf/section_env_debug.html
+
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug",
+            "executable": "/Users/randle_h/Desktop/ESP32-WiFi-Monitor/.pio/build/esp32cam/firmware.elf",
+            "projectEnvName": "esp32cam",
+            "toolchainBinDir": "/Users/randle_h/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "preLaunchTask": {
+                "type": "PlatformIO",
+                "task": "Pre-Debug"
+            }
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug (skip Pre-Debug)",
+            "executable": "/Users/randle_h/Desktop/ESP32-WiFi-Monitor/.pio/build/esp32cam/firmware.elf",
+            "projectEnvName": "esp32cam",
+            "toolchainBinDir": "/Users/randle_h/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug (without uploading)",
+            "executable": "/Users/randle_h/Desktop/ESP32-WiFi-Monitor/.pio/build/esp32cam/firmware.elf",
+            "projectEnvName": "esp32cam",
+            "toolchainBinDir": "/Users/randle_h/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "loadMode": "manual"
+        }
+    ]
 }
