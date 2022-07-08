@@ -1,3 +1,3 @@
-.pio/build/esp32cam/FrameworkArduino/cbuf.cpp.o: \
- /Users/randle_h/.platformio/packages/framework-arduinoespressif32/cores/esp32/cbuf.cpp \
- /Users/randle_h/.platformio/packages/framework-arduinoespressif32/cores/esp32/cbuf.h
+Z:/ESP32-AiThinker/.pio/build/esp32cam/FrameworkArduino/cbuf.cpp.o: \
+ C:/Users/RandleH/.platformio/packages/framework-arduinoespressif32/cores/esp32/cbuf.cpp \
+ C:/Users/RandleH/.platformio/packages/framework-arduinoespressif32/cores/esp32/cbuf.h

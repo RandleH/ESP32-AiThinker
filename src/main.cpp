@@ -20,10 +20,11 @@ FirebaseData firebaseData;
 
 #include "rh_common.h"
 #include "bsp/rh_gpio.h"
+#include "bsp/rh_sdio.h"
+
 #include "dev/rh_led.h"
 
 
-#define RH(format, ...)  Serial.printf("RH:"format, ##__VA_ARGS__)
 
 void setup(){
   
@@ -31,13 +32,16 @@ void setup(){
     rh_led__off(FLUSH_LED);
     rh_led__off(BOARD_LED);
 
-  
-  
+    rh_sdio__init();
+    rh_sdio__mkdir("/aaa/bbb/ccc");
+    rh_sdio__deinit();
+
 }
 
 void loop (){
-  vTaskDelay(100);
-  rh_led__on(FLUSH_LED);
-  vTaskDelay(100);
-  rh_led__off(FLUSH_LED);
+    vTaskDelay(100);
+    rh_led__on(FLUSH_LED);
+    vTaskDelay(100);
+    rh_led__off(FLUSH_LED);
+    
 }
