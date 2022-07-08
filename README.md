@@ -1,2 +1,53 @@
 # ESP32-AiThinker
-A remote monitor program based on ESP32 Ai Thinker.
+
+
+
+
+
+## ESP32-AiThinker 项目计划书
+
+### 开发环境配置
+
+✅ PlatformIO + Arduino + FreeRTOS
+
+✅ 驱动安装+UART烧录
+
+☑️ JTAG烧录仿真
+
+
+
+
+### SD-Card 任务
+
+✅ 给定路径，并创建之
+
+☑️ 给定文件路径和二进制数据，写入
+
+☑️ 给定文件路径，读取二进制数据
+
+☑️ 给定JSON文件，解析并上报至系统
+
+
+
+
+### 摄像头任务
+
+☑️ 具备摄像头启动开关，给定一个trigger，拍摄一幅图像到指定内存区域
+
+☑️ 拍摄一幅图像，保存至SD-Card，并返回状态
+
+☑️ 录制一段时间视频，保存至SD-Card，并返回状态
+
+☑️ 实时透传数据至服务器
+
+
+
+
+### Firebase数据库任务
+
+✅ 实现从数据库中读取字符串
+
+☑️ 实现本地保存的文件上传至数据库
+
+
+
