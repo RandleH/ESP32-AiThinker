@@ -1,0 +1,37 @@
+{
+	"wifi" : [
+		{
+			"ssid":"SUES",
+			"password":"TripleUS2637"
+		},
+		{
+		    "ssid":"USC Guest Wifi",
+			"password":null	
+		},
+		{
+			"ssid":"RandleH's Red iPhone",
+			"password":"0629johnny"
+		}
+	],
+    "camera":{
+        "Y2_GPIO ":5,  
+        "Y3_GPIO":18,
+        "Y4_GPIO":19,
+        "Y5_GPIO":21,
+        "Y6_GPIO":36,
+        "Y7_GPIO":39,
+        "Y8_GPIO":34,
+        "Y9_GPIO":35,
+        "PCLK_GPIO":22,
+        "XCLK_GPIO": 0,
+        "HSYC_GPIO":23,
+        "VSYC_GPIO":25,
+        "RSET_GPIO":-1,
+        "PWDN_GPIO":32,
+        "HREF_GPIO":23,
+        "SIOD_GPIO":26,
+        "SIOC_GPIO":27,
+        "brightness":123
+    }
+
+}

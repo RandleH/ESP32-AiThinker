@@ -6,7 +6,9 @@
 	],
 	"settings": {
 		"files.associations": {
-			"rh_common.h": "c"
+			"rh_common.h": "c",
+			"esp_log.h": "c",
+			"*.tcc": "cpp"
 		}
 	}
 }
