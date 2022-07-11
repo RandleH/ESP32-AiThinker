@@ -9,14 +9,6 @@
 
 #include <WiFi.h>
 
-#define WIFI_SSID     "USC Guest Wireless" // your wifi SSID
-#define WIFI_PASSWORD "" //your wifi PASSWORD
-
-#define LedPin 4         // pin d4 as toggle pin
-
-#define FIREBASE_HOST "esp32-wifi-monitor-default-rtdb.firebaseio.com" // change here
-#define FIREBASE_AUTH "JEScAl2BJFIo5goTturXfL76y0eaCJiXBbx1wRgr"       // your private key
-FirebaseData firebaseData;
 
 #include "rh_common.h"
 #include "bsp/rh_gpio.h"
@@ -27,6 +19,7 @@ FirebaseData firebaseData;
 #include "dev/rh_camera.h"
 
 #include "app/rh_rtdb.h"
+#include "app/rh_app.h"
 
 #include <SD_MMC.h>
 #include <FS.h>
@@ -34,25 +27,36 @@ FirebaseData firebaseData;
 
 #define STORAGE_BUCKET_ID "esp32-wifi-monitor.appspot.com"
 
+namespace rh{
+    Application   app(__TIME__);
+}
+
+
 void setup(){
-  
-    rh_gpio__init();
-    rh_led__off(FLUSH_LED);
-    rh_led__off(BOARD_LED);
-
-    rh_sdio__init();
-
-    0==rh_wifi__init()?RH_CONSOLE("WiFi connect success"):RH_CONSOLE("WiFi connect failed");
-    0==rh_camera__init()? RH_CONSOLE("camera init success") : RH_CONSOLE("camera init failed");
-    0==rh_camera__save2file("/sdcard/img001.jpg")?RH_CONSOLE("save success"):RH_CONSOLE("save failed");
-
-    0==rh_rtdb__init(FIREBASE_HOST,FIREBASE_AUTH)?RH_CONSOLE("database success"):RH_CONSOLE("database failed");
     
+    0==rh_sdio__init()? rh_app__init_fromJSON( rh::app ) : rh_app__init_default( rh::app );
+    // size_t len = 0;
+    // 0==rh_sdio__query( "/config.json", &len)?RH_CONSOLE("query success, len=%ld", len):RH_CONSOLE("query failed");
+    
+    // char *buf = (char*)calloc(len+1, sizeof(char));
+    // NULL!=buf?RH_CONSOLE("malloc success"):RH_CONSOLE("malloc failed");
+    
+    // buf[len] = '\0';
+    // 0==rh_sdio__load("/config.json", buf, len)?RH_CONSOLE("load success"):RH_CONSOLE("load failed");
+    
+    
+
+    // rh_gpio__init();
+    // rh_led__off(FLUSH_LED);
+    // rh_led__off(BOARD_LED);
+
+ 
+    // 0==rh_wifi__init()?RH_CONSOLE("WiFi connect success"):RH_CONSOLE("WiFi connect failed");
+    // 0==rh_camera__init()? RH_CONSOLE("camera init success") : RH_CONSOLE("camera init failed");
+    // 0==rh_camera__save2file("/sdcard/img001.jpg")?RH_CONSOLE("save success"):RH_CONSOLE("save failed");
+
 }
 
 void loop (){
-    // vTaskDelay(100);
-    // rh_led__on(FLUSH_LED);
-    // rh_led__off(FLUSH_LED);
     vTaskDelay(100);
 }

@@ -108,8 +108,6 @@ ESP32开发环境种类繁多, 例如
   $ idf.py menuconfig
   ```
 
-  ![image-20220706135336648](/Users/randle_h/Library/Application Support/typora-user-images/image-20220706135336648.png)
-
   这个选项取决于你想用`app_main()`的方式还是Arduino的`setup()`和`loop()`方式.
 
   

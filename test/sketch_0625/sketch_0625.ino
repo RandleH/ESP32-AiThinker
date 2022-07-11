@@ -9,8 +9,8 @@
 
 #include <WiFi.h>
 
-#define WIFI_SSID     "SUES" // your wifi SSID
-#define WIFI_PASSWORD "TripleUS2637" //your wifi PASSWORD
+#define WIFI_SSID     "USC Guest Wireless" // your wifi SSID
+#define WIFI_PASSWORD "" //your wifi PASSWORD
 
 #define LedPin 4         // pin d4 as toggle pin
 

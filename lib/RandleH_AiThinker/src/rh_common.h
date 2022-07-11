@@ -15,15 +15,15 @@ extern "C"{
 #define BOARD_LED            (0)
 #define FLUSH_LED            (1)
 
-#define SDCARD_D0_GPIO       ()
-#define SDCARD_D1_GPIO       ()
-#define SDCARD_D2_GPIO       ()
-#define SDCARD_D3_GPIO       ()
-#define SDCARD_CMD_GPIO      ()
-#define SDCARD_CLK_GPIO      () 
+#define SDCARD_D0_GPIO       (2)
+#define SDCARD_D1_GPIO       (4)
+#define SDCARD_D2_GPIO       (12)
+#define SDCARD_D3_GPIO       (13)
+#define SDCARD_CMD_GPIO      (15)
+#define SDCARD_CLK_GPIO      (14) 
 
-#define SDCARD_MOUNT_POINT   "/sdcard"
-
+#define SDCARD_MOUNT_POINT       "/sdcard"
+#define SDCARD_CONFIG_JSON_PATH  "/config.json"
 
 // See "ESP32_Manual_Reference - IO_MUX_Pad_List" @Page 57 
 #define CAMERA_Y2_GPIO       ( 5)
@@ -47,5 +47,111 @@ extern "C"{
 #ifdef __cplusplus
 }
 #endif
+
+#include <string>
+#include <vector>
+using namespace std;
+
+namespace rh{
+
+class ConfigGPIO{
+public:
+    ConfigGPIO():isValid(false){}
+    bool     isValid;
+    vector< std::pair<int,bool> > list;
+};
+
+class ConfigWifi{
+public:
+    ConfigWifi():isValid(false){}
+    bool     isValid;
+    vector< std::pair<string,string> > list;
+};
+
+class ConfigCamera{
+public:
+    ConfigCamera():isValid(false){}
+    bool     isValid;
+    
+};
+
+class ConfigFirebase{
+public:
+    ConfigFirebase():isValid(false){}
+    bool     isValid;
+    string   host;
+    string   auth;
+};
+
+class ConfigSDCard{
+public: 
+    ConfigSDCard():isValid(false){}
+    ConfigSDCard(int mode):isValid(true), d0_gpio(SDCARD_D0_GPIO),\
+                                          d1_gpio(SDCARD_D1_GPIO),\
+                                          d2_gpio(SDCARD_D2_GPIO),\
+                                          d3_gpio(SDCARD_D2_GPIO),\
+                                          cmd_gpio(SDCARD_CMD_GPIO),\
+                                          clk_gpio(SDCARD_CLK_GPIO),\
+                                          mode(mode){}
+    bool     isValid;
+    int      mode;
+    uint8_t  d0_gpio;
+    uint8_t  d1_gpio;
+    uint8_t  d2_gpio;
+    uint8_t  d3_gpio;
+    uint8_t  cmd_gpio;
+    uint8_t  clk_gpio;    
+};
+
+class WiFi{
+public:
+    WiFi():config(),isConnected(false){}
+    ConfigWifi config;
+    bool       isConnected;
+    //...//
+};
+
+class Database{
+public:
+    Database():config(){}
+    ConfigFirebase config;
+};
+
+class Camera{
+public:
+    Camera():config(){}
+    ConfigCamera config;
+};
+
+class GPIO{
+public:
+    GPIO():config(){}
+    ConfigGPIO config;
+};
+
+class SDCard{
+public:
+    SDCard():config(),isInitialized(false){}
+    ConfigSDCard config;
+    bool         isInitialized;
+};
+
+class Application{
+public:
+    Application(string tc):time_compile(tc){}
+    SDCard    sdcard;
+    GPIO      gpio;
+    Camera    camera;
+    Database  database;
+    WiFi      wifi;
+
+    string    time_compile;
+    string    time_real;
+};
+
+extern Application app;
+
+}
+
 
 #endif
