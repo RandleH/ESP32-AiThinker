@@ -34,24 +34,12 @@ namespace rh{
 
 void setup(){
     
-    0==rh_sdio__init()? rh_app__init_fromJSON( rh::app ) : rh_app__init_default( rh::app );
+    0==rh_sdio__init()? rh_app__load_fromJSON( rh::app ) : rh_app__load_default( rh::app );
 
-    0==rh::app.camera.init()?RH_CONSOLE("success"):RH_CONSOLE("failed");
+    0==rh::app.camera.init() ? RH_CONSOLE("[Y] camera") : RH_CONSOLE("[N] camera");
+    0==rh::app.gpio.init()   ? RH_CONSOLE("[Y] gpio")   : RH_CONSOLE("[N] gpio");
+    0==rh::app.wifi.init()   ? RH_CONSOLE("[Y] wifi")   : RH_CONSOLE("[N] wifi");
     
-    // size_t len = 0;
-    // 0==rh_sdio__query( "/config.json", &len)?RH_CONSOLE("query success, len=%ld", len):RH_CONSOLE("query failed");
-    
-    // char *buf = (char*)calloc(len+1, sizeof(char));
-    // NULL!=buf?RH_CONSOLE("malloc success"):RH_CONSOLE("malloc failed");
-    
-    // buf[len] = '\0';
-    // 0==rh_sdio__load("/config.json", buf, len)?RH_CONSOLE("load success"):RH_CONSOLE("load failed");
-    
-    
-
-    // rh_gpio__init();
-    // rh_led__off(FLUSH_LED);
-    // rh_led__off(BOARD_LED);
 
  
     // 0==rh_wifi__init()?RH_CONSOLE("WiFi connect success"):RH_CONSOLE("WiFi connect failed");

@@ -5,8 +5,8 @@
 
 
 
-void rh_app__init_fromJSON ( rh::Application& app);
-void rh_app__init_default  ( rh::Application& app);
+void rh_app__load_fromJSON ( rh::Application& app);
+void rh_app__load_default  ( rh::Application& app);
 
 
 

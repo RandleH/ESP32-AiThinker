@@ -50,6 +50,7 @@ extern "C"{
 
 #include <string>
 #include <vector>
+#include <tuple>
 using namespace std;
 
 namespace rh{
@@ -58,7 +59,7 @@ class ConfigGPIO{
 public:
     ConfigGPIO():isValid(false){}
     bool     isValid;
-    vector< std::pair<int,bool> > list;
+    vector< std::tuple<int,uint8_t,bool> > list;
 };
 
 class ConfigWifi{
@@ -109,6 +110,7 @@ public:
     WiFi():config(),isConnected(false){}
     ConfigWifi config;
     bool       isConnected;
+    int init(void);
     //...//
 };
 
@@ -129,6 +131,7 @@ class GPIO{
 public:
     GPIO():config(){}
     ConfigGPIO config;
+    int init(void);
 };
 
 class SDCard{

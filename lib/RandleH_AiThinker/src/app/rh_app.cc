@@ -50,7 +50,7 @@ static int rh_s__jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 }
 
 #include "esp_camera.h"
-static int rh_s__write_config_camera( const char *js, const jsmntok_t *tok, rh::ConfigCamera& config){
+static size_t rh_s__write_config_camera   ( const char *js, const jsmntok_t *tok, rh::ConfigCamera&   config){
     size_t offset=0;
     assert( tok->type==JSMN_STRING );
     ++tok;++offset;
@@ -67,16 +67,19 @@ static int rh_s__write_config_camera( const char *js, const jsmntok_t *tok, rh::
     }
     for( size_t i=0; i<nitem; ++i, ++tok, ++offset ){
         assert( tok->type==JSMN_STRING );
-        RH_CONSOLE("type=%d, %.*s -- ", tok->type, tok->end-tok->start, &js[tok->start]);  // KEY - "XXX_GPIO"
+        // RH_CONSOLE("type=%d, %.*s -- ", tok->type, tok->end-tok->start, &js[tok->start]);  // KEY - "XXX_GPIO"
         hash_t item = GET(&js[tok->start], tok->end-tok->start);
         
         ++tok;++offset;
         assert( tok->type==JSMN_PRIMITIVE );
-        RH_CONSOLE("type=%d, %.*s\n", tok->type, tok->end-tok->start, &js[tok->start]);    // VALUE
+        // RH_CONSOLE("type=%d, %.*s\n", tok->type, tok->end-tok->start, &js[tok->start]);    // VALUE
         
         // Get the value from JSON and convert string to number
-        char buf[5] = {0};
-        snprintf( buf, 5, "%.*s", tok->end-tok->start, &js[tok->start]);
+        char buf[32] = {0};
+        if( 32<=snprintf( buf, 32, "%.*s", tok->end-tok->start, &js[tok->start]) ){
+            RH_CONSOLE("Parameters should be less than 32");
+            goto WRITE_CONFIG_CAMERA_FAILED;
+        }
         long val = atol( buf );
         switch( item ){
             case MAP("Y2_GPIO"):  
@@ -99,7 +102,8 @@ static int rh_s__write_config_camera( const char *js, const jsmntok_t *tok, rh::
                 ((camera_config_t*)(config.params))->pin_pclk  = val;break;
             case MAP("XCLK_GPIO"):
                 ((camera_config_t*)(config.params))->pin_xclk  = val;break;
-            case MAP("HSYC_GPIO"):break;
+            case MAP("HSYC_GPIO"):
+                break;
             case MAP("VSYC_GPIO"):
                 ((camera_config_t*)(config.params))->pin_vsync = val;break;
             case MAP("RSET_GPIO"):
@@ -129,7 +133,6 @@ static int rh_s__write_config_camera( const char *js, const jsmntok_t *tok, rh::
                 goto WRITE_CONFIG_CAMERA_FAILED;
         }
     }
-    ((camera_config_t*)(config.params))->xclk_freq_hz = 10000000;
     ((camera_config_t*)(config.params))->ledc_timer   = LEDC_TIMER_0,
     ((camera_config_t*)(config.params))->ledc_channel = LEDC_CHANNEL_0,
     config.isValid = true;
@@ -144,7 +147,7 @@ WRITE_CONFIG_CAMERA_FAILED:
     return -1;
 }
 
-static size_t rh_s__write_config_wifi( const char *js, const jsmntok_t *tok, rh::ConfigWifi& config){
+static size_t rh_s__write_config_wifi     ( const char *js, const jsmntok_t *tok, rh::ConfigWifi&     config){
     size_t offset=0;
     assert( tok->type==JSMN_STRING );
     ++tok;++offset;
@@ -156,25 +159,35 @@ static size_t rh_s__write_config_wifi( const char *js, const jsmntok_t *tok, rh:
         ++tok;++offset;
         
         assert( tok->type==JSMN_STRING );
-        RH_CONSOLE("type=%d, %.*s -- ", tok->type, tok->end-tok->start, &js[tok->start]);  // KEY - "ssid"
+        // RH_CONSOLE("type=%d, %.*s -- ", tok->type, tok->end-tok->start, &js[tok->start]);  // KEY - "ssid"
         ++tok;++offset;
         
         assert( tok->type==JSMN_STRING );
-        RH_CONSOLE("type=%d, %.*s\n", tok->type, tok->end-tok->start, &js[tok->start]);    // VALUE
+        // RH_CONSOLE("type=%d, %.*s\n", tok->type, tok->end-tok->start, &js[tok->start]);    // VALUE
+        
+        string ssid( &js[tok->start], tok->end-tok->start);
         ++tok; ++offset;
         
         assert( tok->type==JSMN_STRING );
-        RH_CONSOLE("type=%d, %.*s -- ", tok->type, tok->end-tok->start, &js[tok->start]);  // KEY - "password"
+        // RH_CONSOLE("type=%d, %.*s -- ", tok->type, tok->end-tok->start, &js[tok->start]);  // KEY - "password"
         ++tok;++offset;
         
         assert( tok->type==JSMN_STRING || tok->type==JSMN_PRIMITIVE );
-        RH_CONSOLE("type=%d, %.*s\n", tok->type, tok->end-tok->start, &js[tok->start]);    // VALUE if PRIMITIVE, means no password
+        // RH_CONSOLE("type=%d, %.*s\n", tok->type, tok->end-tok->start, &js[tok->start]);    // VALUE if PRIMITIVE, means no password
+        string password;
+        if( tok->type==JSMN_PRIMITIVE )
+            password = string();
+        if( tok->type==JSMN_STRING)
+            password = string( &js[tok->start], tok->end-tok->start);
         ++tok; ++offset;
+
+        config.list.push_back( std::make_pair( ssid, password) );
     }
+    config.isValid = true;
     return offset;
 }
 
-static size_t rh_s__write_config_firebase( const char *js, const jsmntok_t *tok, rh::ConfigFirebase& config){
+static size_t rh_s__write_config_firebase ( const char *js, const jsmntok_t *tok, rh::ConfigFirebase& config){
     size_t offset=0;
     assert( tok->type==JSMN_STRING );
     ++tok;++offset;
@@ -206,7 +219,6 @@ static int rh_s__pharse( char* __js, size_t __len, rh::Application& __app){
     r = jsmn_parse(&parser, __js, __len, tok, r);                   // 获取token
 
     for ( int i=1; i<r; ) {
-        // printf("size=%d, type=%d, %.*s\n", t[i+1].size, t[i+1].type, t[i+1].end-t[i+1].start, &js[t[i+1].start]);
         if(       0==rh_s__jsoneq( __js, &tok[i], "camera") ){
             i += rh_s__write_config_camera  ( __js, &tok[i], __app.camera.config);
             // Do something
@@ -226,7 +238,7 @@ static int rh_s__pharse( char* __js, size_t __len, rh::Application& __app){
     return 0;
 }
 
-void rh_app__init_fromJSON ( rh::Application& app){
+void rh_app__load_fromJSON ( rh::Application& app){
     RH_CONSOLE("%s:", __func__);
     size_t len = 0;
     char*  buf = NULL;
@@ -268,9 +280,7 @@ void rh_app__init_fromJSON ( rh::Application& app){
         RH_CONSOLE("Failed to pharse JSON");
         goto DEFAULT_INIT;
     }
-    // RH_CONSOLE("JSON:\n\n\n%s", buf);
 
-    
 
     return;
 
@@ -278,10 +288,10 @@ DEFAULT_INIT:
     RH_CONSOLE("Switch to initialize in default mode");
     if( NULL!=buf ) 
         free(buf);
-    rh_app__init_default(app);    
+    rh_app__load_default(app);    
 }
 
-void rh_app__init_default  ( rh::Application& app){
+void rh_app__load_default  ( rh::Application& app){
     RH_CONSOLE("%s:", __func__);
 }
 

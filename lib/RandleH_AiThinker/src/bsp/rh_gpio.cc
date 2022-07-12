@@ -6,10 +6,10 @@
 #include "Arduino.h"
 #include "rh_common.h"
 
-void rh_gpio__init   (void){
-  pinMode(BOARD_LED_GPIO, OUTPUT);
-  pinMode(FLUSH_LED_GPIO, OUTPUT);
-  
+int  rh_gpio__init   (void){
+    pinMode(BOARD_LED_GPIO, OUTPUT);
+    pinMode(FLUSH_LED_GPIO, OUTPUT);
+    return 0;
 }
 
 void rh_gpio__set    ( char gpio, int pin, int value){
@@ -28,5 +28,19 @@ void rh_gpio__toggle ( char gpio, int pin){
 }
 
 
+namespace rh{
 
+int GPIO::init(void){
+    if( this->config.isValid ){
+        for( auto&item:this->config.list){
+            pinMode( std::get<0>(item), std::get<1>(item));
+            if( std::get<1>(item)==INPUT )
+                digitalWrite( std::get<0>(item), std::get<2>(item));
+        }
+        return 0;
+    }
+    return rh_gpio__init();
+}
+
+}
 

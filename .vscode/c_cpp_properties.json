@@ -444,6 +444,7 @@
                 "PLATFORMIO=60100",
                 "ARDUINO_ESP32_DEV",
                 "BOARD_HAS_PSRAM",
+                "BOARD_HAS_PSRAM",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
                 "UNITY_INCLUDE_CONFIG_H",
@@ -466,6 +467,7 @@
             "compilerPath": "C:/Users/randl/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc.exe",
             "compilerArgs": [
                 "-mlongcalls",
+                "-mfix-esp32-psram-cache-issue",
                 "-mfix-esp32-psram-cache-issue",
                 ""
             ]
