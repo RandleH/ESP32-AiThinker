@@ -8,7 +8,6 @@
 
 int  rh_gpio__init   (void){
     pinMode(BOARD_LED_GPIO, OUTPUT);
-    pinMode(FLUSH_LED_GPIO, OUTPUT);
     return 0;
 }
 

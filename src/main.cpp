@@ -35,16 +35,15 @@ namespace rh{
 void setup(){
     
     0==rh_sdio__init()? rh_app__load_fromJSON( rh::app ) : rh_app__load_default( rh::app );
-
+    
     0==rh::app.camera.init() ? RH_CONSOLE("[Y] camera") : RH_CONSOLE("[N] camera");
     0==rh::app.gpio.init()   ? RH_CONSOLE("[Y] gpio")   : RH_CONSOLE("[N] gpio");
     0==rh::app.wifi.init()   ? RH_CONSOLE("[Y] wifi")   : RH_CONSOLE("[N] wifi");
-    
 
- 
-    // 0==rh_wifi__init()?RH_CONSOLE("WiFi connect success"):RH_CONSOLE("WiFi connect failed");
-    // 0==rh_camera__init()? RH_CONSOLE("camera init success") : RH_CONSOLE("camera init failed");
-    // 0==rh_camera__save2file("/sdcard/img001.jpg")?RH_CONSOLE("save success"):RH_CONSOLE("save failed");
+    rh::app.camera.save("/", "img001");
+    rh::app.camera.save("/", "img002");
+    rh::app.camera.save("/", "img003");
+    rh::app.camera.save("/", "img004");
 
 }
 

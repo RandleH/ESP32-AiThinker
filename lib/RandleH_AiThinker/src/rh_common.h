@@ -125,6 +125,8 @@ public:
     Camera():config(){}
     ConfigCamera config;
     int init(void);
+    int save(const char* path, const char* name);
+    int save(void** buf, size_t *len);
 };
 
 class GPIO{

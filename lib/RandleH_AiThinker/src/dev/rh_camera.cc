@@ -129,4 +129,44 @@ int Camera::init(void){
     return rh_camera__init();
 }
 
+int Camera::save(const char* path, const char* name){
+    RH_CONSOLE("%s", __func__);
+    string pf(path);
+    string n(name);
+    RH_CONSOLE("Check file name");
+    size_t pos = n.find('.');
+    if( pos==0 ){
+        RH_CONSOLE("Invalid file name");
+        goto CAMERA_SAVE_FAILED;
+    }
+    if( pos==std::string::npos ){
+        pos = n.size();
+    }
+    pf.append( n.begin(), n.begin()+pos);
+    RH_CONSOLE("Add proper extension");
+    switch( ((camera_config_t*)this->config.params)->pixel_format ){
+        case PIXFORMAT_RGB565:
+        case PIXFORMAT_RGB444:    
+        case PIXFORMAT_RGB555:
+        case PIXFORMAT_RAW:    
+            pf += ".txt"; break;
+        case PIXFORMAT_RGB888:
+        case PIXFORMAT_GRAYSCALE:
+        case PIXFORMAT_YUV422:
+            pf += ".bmp"; break;
+        case PIXFORMAT_JPEG:
+            pf += ".jpg"; break;
+    
+        default:
+            RH_CONSOLE("Unknown pixel format");
+            goto CAMERA_SAVE_FAILED;
+    }
+    RH_CONSOLE("saving file: %s", pf.c_str());
+    return rh_camera__save2file(pf.c_str());
+
+CAMERA_SAVE_FAILED:
+    return 1;    
+}
+
+
 }
