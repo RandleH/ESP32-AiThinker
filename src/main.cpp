@@ -31,10 +31,13 @@ namespace rh{
     Application   app(__TIME__);
 }
 
-
+#include "esp_camera.h"
 void setup(){
-    
-    0==rh_sdio__init()? rh_app__init_fromJSON( rh::app ) : rh_app__init_default( rh::app );
+    0==rh::app.camera.init();?RH_CONSOLE("success"):RH_CONSOLE("failed");
+
+
+
+    // 0==rh_sdio__init()? rh_app__init_fromJSON( rh::app ) : rh_app__init_default( rh::app );
     // size_t len = 0;
     // 0==rh_sdio__query( "/config.json", &len)?RH_CONSOLE("query success, len=%ld", len):RH_CONSOLE("query failed");
     

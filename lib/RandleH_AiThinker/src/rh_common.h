@@ -70,8 +70,9 @@ public:
 
 class ConfigCamera{
 public:
-    ConfigCamera():isValid(false){}
+    ConfigCamera():isValid(false),params(nullptr){}
     bool     isValid;
+    void*    params;
     
 };
 
@@ -121,6 +122,7 @@ class Camera{
 public:
     Camera():config(){}
     ConfigCamera config;
+    int init(void);
 };
 
 class GPIO{

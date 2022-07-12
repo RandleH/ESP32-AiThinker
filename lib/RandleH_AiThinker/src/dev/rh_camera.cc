@@ -7,6 +7,8 @@
 #include "../support/sensor.h"
 #include "../support/cam_hal.h"
 #include "bsp/rh_sdio.h"
+#include "dev/rh_camera.h"
+
 
 int rh_camera__init        (void){
     framesize_t frame_size   = FRAMESIZE_UXGA;
@@ -50,15 +52,19 @@ int rh_camera__init        (void){
         .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
     };
 
+    return rh_camera__init(&camera_config);
+}
+
+int rh_camera__init(void* params){
+    camera_config_t *config = (camera_config_t*)params;
     //initialize the camera
-    esp_err_t ret = esp_camera_init(&camera_config);
+    esp_err_t ret = esp_camera_init(config);
     
     if( ret!=ESP_OK ) while(1);   // PASSED
 
-
-    if (ESP_OK == ret && PIXFORMAT_JPEG == pixel_format && FRAMESIZE_SVGA > size_bak) {
+    if (ESP_OK == ret && PIXFORMAT_JPEG == config->pixel_format && FRAMESIZE_SVGA > config->frame_size) {
         sensor_t *s = esp_camera_sensor_get();
-        s->set_framesize(s, size_bak);
+        s->set_framesize(s, config->frame_size);
     }
     return ret!=ESP_OK;
 }
@@ -88,7 +94,13 @@ int rh_camera__save2file  (const char* __pf ){
 
 
 
+namespace rh{
 
+int Camera::init(void){
+    if( this->config.isValid ){
+        return rh_camera__init( this->config.params );
+    }
+    return rh_camera__init();
+}
 
-
-
+}
