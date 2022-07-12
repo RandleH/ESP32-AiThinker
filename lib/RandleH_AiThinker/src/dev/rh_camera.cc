@@ -97,7 +97,33 @@ int rh_camera__save2file  (const char* __pf ){
 namespace rh{
 
 int Camera::init(void){
+    RH_CONSOLE("%s", __func__);
     if( this->config.isValid ){
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d0);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d1);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d2);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d3);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d4);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d5);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d6);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_d7);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_pwdn    );
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_reset   );
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_xclk    );
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_sscb_sda);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pin_sscb_scl);
+
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->fb_count);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->jpeg_quality);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->grab_mode);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->ledc_channel);
+        // RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->ledc_timer);
+        RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->pixel_format);
+        RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->xclk_freq_hz);
+        RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->fb_location);
+        RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->frame_size);
+        RH_CONSOLE("%d", ((camera_config_t*)this->config.params)->jpeg_quality);
+
         return rh_camera__init( this->config.params );
     }
     return rh_camera__init();

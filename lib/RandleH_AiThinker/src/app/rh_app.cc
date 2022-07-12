@@ -63,6 +63,7 @@ static int rh_s__write_config_camera( const char *js, const jsmntok_t *tok, rh::
         if( nullptr==config.params ){
             goto WRITE_CONFIG_CAMERA_FAILED;
         }
+        memset( config.params, 0, sizeof(camera_config_t));
     }
     for( size_t i=0; i<nitem; ++i, ++tok, ++offset ){
         assert( tok->type==JSMN_STRING );
@@ -120,7 +121,7 @@ static int rh_s__write_config_camera( const char *js, const jsmntok_t *tok, rh::
             case MAP("JPEG_QUALITY"):
                 ((camera_config_t*)(config.params))->jpeg_quality = val;break;
             case MAP("GRAB_MODE"):
-                ((camera_config_t*)(config.params))->jpeg_quality = (camera_grab_mode_t)val;break;    
+                ((camera_config_t*)(config.params))->grab_mode    = (camera_grab_mode_t)val;break;    
             case MAP("FRAME_CNT"):
                 ((camera_config_t*)(config.params))->fb_count     = val;break;
             default:
@@ -128,7 +129,7 @@ static int rh_s__write_config_camera( const char *js, const jsmntok_t *tok, rh::
                 goto WRITE_CONFIG_CAMERA_FAILED;
         }
     }
-
+    ((camera_config_t*)(config.params))->xclk_freq_hz = 10000000;
     ((camera_config_t*)(config.params))->ledc_timer   = LEDC_TIMER_0,
     ((camera_config_t*)(config.params))->ledc_channel = LEDC_CHANNEL_0,
     config.isValid = true;
