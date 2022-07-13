@@ -8,7 +8,10 @@
 		"files.associations": {
 			"rh_common.h": "c",
 			"esp_log.h": "c",
-			"*.tcc": "cpp"
+			"*.tcc": "cpp",
+			"type_traits": "cpp",
+			"iosfwd": "cpp",
+			"sstream": "cpp"
 		}
 	}
 }

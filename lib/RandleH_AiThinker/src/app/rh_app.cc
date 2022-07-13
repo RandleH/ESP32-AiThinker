@@ -33,21 +33,6 @@ static hash_t GET(const char *str, size_t len){
 }
 
 
-static int rh_s__check_fromJSON(  char* __buf, size_t __len){
-    for( size_t i=0; i<__len; ++i){
-        if( __buf[i]==(char)0xff || __buf[i]=='\t' )    __buf[i] = ' ';
-        else if( __buf[i]=='\0' ) return 1;
-    }
-    return 0;
-}
-
-static int rh_s__jsoneq(const char *json, jsmntok_t *tok, const char *s) {
-    if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
-        strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
-      return 0;
-    }
-    return -1;
-}
 
 #include "esp_camera.h"
 static size_t rh_s__write_config_camera   ( const char *js, const jsmntok_t *tok, rh::ConfigCamera&   config){
@@ -194,21 +179,59 @@ static size_t rh_s__write_config_firebase ( const char *js, const jsmntok_t *tok
     assert( tok->type==JSMN_OBJECT );
     size_t nitem = tok->size;
     ++tok;++offset;
-    for( size_t i=0; i<nitem; ++i, ++tok, ++offset ){
-        assert( tok->type==JSMN_STRING );
-        RH_CONSOLE("type=%d, %.*s -- ", tok->type, tok->end-tok->start, &js[tok->start]);  // KEY - "host"
-        ++tok;++offset;
-        
-        assert( tok->type==JSMN_STRING );
-        RH_CONSOLE("type=%d, %.*s\n", tok->type, tok->end-tok->start, &js[tok->start]);    // VALUE
-    }
+    
+    size_t nc = 0;
+
+    // JSON = "[host]"
+    assert( tok->type==JSMN_STRING );
+    ++tok;++offset;
+
+    // JSON = "xxxxx.com"
+    assert( tok->type==JSMN_STRING );
+    nc = tok->end-tok->start;
+    char* host = (char*)config.alloc.malloc( (nc+1)*sizeof(char) );
+    strncpy( host, &js[tok->start], nc );
+    host[nc] = '\0';
+    config.host = host;
+    ++tok;++offset;
+
+    // JSON = "[auth]"
+    assert( tok->type==JSMN_STRING );
+    ++tok;++offset;
+
+    // JSON = "********"
+    assert( tok->type==JSMN_STRING );
+    nc = tok->end-tok->start;
+    char* auth = (char*)config.alloc.malloc( (nc+1)*sizeof(char) );
+    strncpy( auth, &js[tok->start], nc );
+    auth[nc] = '\0';
+    config.auth = auth;
+    ++tok;++offset;
+
+    config.isValid = true;
     return offset;
 }
 
-static int rh_s__pharse( char* __js, size_t __len, rh::Application& __app){
+static int rh_s__check (       char* js, size_t len){
+    for( size_t i=0; i<len; ++i){
+        if( js[i]==(char)0xff || js[i]=='\t' )    js[i] = ' ';
+        else if( js[i]=='\0' ) return 1;
+    }
+    return 0;
+}
+
+static int rh_s__jsoneq( const char *js, jsmntok_t *tok, const char *s) {
+    if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
+        strncmp(js + tok->start, s, tok->end - tok->start) == 0) {
+      return 0;
+    }
+    return -1;
+}
+
+static int rh_s__pharse( const char* js, size_t len, rh::Application& __app){
     jsmn_parser parser;
     jsmn_init(&parser);
-    int r = jsmn_parse( &parser, __js, __len, NULL, 0);           // 试探性计算token数量
+    int r = jsmn_parse( &parser, js, len, NULL, 0);           // 试探性计算token数量
     
     if(r<0){
         return -1;
@@ -216,17 +239,17 @@ static int rh_s__pharse( char* __js, size_t __len, rh::Application& __app){
     
     jsmntok_t *tok = (jsmntok_t*)malloc(r*sizeof(jsmntok_t));       // 分配临时空间
     jsmn_init(&parser);                                             // 初始化(重定向)
-    r = jsmn_parse(&parser, __js, __len, tok, r);                   // 获取token
+    r = jsmn_parse(&parser, js, len, tok, r);                   // 获取token
 
     for ( int i=1; i<r; ) {
-        if(       0==rh_s__jsoneq( __js, &tok[i], "camera") ){
-            i += rh_s__write_config_camera  ( __js, &tok[i], __app.camera.config);
+        if(       0==rh_s__jsoneq( js, &tok[i], "camera") ){
+            i += rh_s__write_config_camera  ( js, &tok[i], __app.camera.config);
             // Do something
-        }else if( 0==rh_s__jsoneq( __js, &tok[i], "wifi")   ){
-            i += rh_s__write_config_wifi    ( __js, &tok[i], __app.wifi.config);
+        }else if( 0==rh_s__jsoneq( js, &tok[i], "wifi")   ){
+            i += rh_s__write_config_wifi    ( js, &tok[i], __app.wifi.config);
             // Do something
-        }else if( 0==rh_s__jsoneq( __js, &tok[i], "firebase") ){
-            i += rh_s__write_config_firebase( __js, &tok[i], __app.database.config);
+        }else if( 0==rh_s__jsoneq( js, &tok[i], "firebase") ){
+            i += rh_s__write_config_firebase( js, &tok[i], __app.database.config);
             // Do something
         }else{
             // Unknown Key Pair
@@ -237,6 +260,8 @@ static int rh_s__pharse( char* __js, size_t __len, rh::Application& __app){
     free(tok);
     return 0;
 }
+
+
 
 void rh_app__load_fromJSON ( rh::Application& app){
     RH_CONSOLE("%s:", __func__);
@@ -269,7 +294,7 @@ void rh_app__load_fromJSON ( rh::Application& app){
         goto DEFAULT_INIT;
     }
 
-    if(0!=rh_s__check_fromJSON( buf, len)){
+    if(0!=rh_s__check( buf, len)){
         RH_CONSOLE("Invalid JSON charactor detected");
         goto DEFAULT_INIT;
     }

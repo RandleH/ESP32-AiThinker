@@ -55,6 +55,13 @@ using namespace std;
 
 namespace rh{
 
+class Allocator{
+public:
+    Allocator( void*(*__malloc)(size_t), void(*__free)(void*) ):malloc(__malloc),free(__free){}
+    void*(*malloc)(size_t);
+    void(*free)(void*);
+};    
+
 class ConfigGPIO{
 public:
     ConfigGPIO():isValid(false){}
@@ -71,18 +78,19 @@ public:
 
 class ConfigCamera{
 public:
-    ConfigCamera():isValid(false),params(nullptr){}
+    ConfigCamera():isValid(false),params(nullptr),alloc(malloc,free){}
     bool     isValid;
     void*    params;
-    
+    Allocator alloc;
 };
 
 class ConfigFirebase{
 public:
-    ConfigFirebase():isValid(false){}
-    bool     isValid;
-    string   host;
-    string   auth;
+    ConfigFirebase():isValid(false),host(nullptr),auth(nullptr),alloc(malloc,free){}
+    bool      isValid;
+    const char*    host;
+    const char*    auth;
+    Allocator alloc;
 };
 
 class ConfigSDCard{
@@ -118,6 +126,10 @@ class Database{
 public:
     Database():config(){}
     ConfigFirebase config;
+    int init(void);
+    int set( const char* path, int    value );
+    int set( const char* path, string value );//
+    int set( const char* path, bool   value );//
 };
 
 class Camera{
