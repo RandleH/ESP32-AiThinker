@@ -24,6 +24,28 @@ int rh_wifi__connect(const char* ssid, const char* password){
     return 0;
 }
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+// name: "Wi-Fi Status Check"
+// type: periodical=1000
+void rh_wifi__task0(void* params){
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
+    while(1){
+        rh::app.wifi.isConnected = (WL_CONNECTED==WiFi.status());
+        RH_CONSOLE("task0");
+        // vTaskDelayUntil( &xLastWakeTime, 1000 );
+        vTaskDelay(1000);
+    }
+    
+}
+
+#ifdef __cplusplus
+}
+#endif
+
 namespace rh{
 int WiFi::init(void){
     if( this->config.isValid ){

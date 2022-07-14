@@ -155,6 +155,15 @@ public:
     bool         isInitialized;
 };
 
+#include "app/rh_event.h"
+class Event{
+public:
+    void*   wifi;
+    Event():wifi(NULL){}
+    int init(void);
+    int set(rh::EG_WiFi_t event);
+};
+
 class Application{
 public:
     Application(string tc):time_compile(tc){}
@@ -164,8 +173,12 @@ public:
     Database  database;
     WiFi      wifi;
 
+    Event     event;
+
     string    time_compile;
     string    time_real;
+
+
 };
 
 extern Application app;

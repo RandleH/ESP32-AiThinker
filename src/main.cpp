@@ -28,7 +28,11 @@ extern FirebaseData fbdo;
 extern FirebaseAuth auth;
 extern FirebaseConfig config;
 
+extern "C"{
+    void rh_wifi__task0(void* params);
+}
 
+#define CPU1   1
 
 void setup(){
     
@@ -38,8 +42,16 @@ void setup(){
     0==rh::app.gpio.init()     ? RH_CONSOLE("[Y] gpio")     : RH_CONSOLE("[N] gpio");
     0==rh::app.wifi.init()     ? RH_CONSOLE("[Y] wifi")     : RH_CONSOLE("[N] wifi");
     0==rh::app.database.init() ? RH_CONSOLE("[Y] database") : RH_CONSOLE("[N] database");
-    
+    0==rh::app.event.init()    ? RH_CONSOLE("[Y] event")    : RH_CONSOLE("[N] event");
+
+
     rh::app.camera.save("/", "img001");
+
+    TaskHandle_t task0;
+
+    xTaskCreatePinnedToCore( rh_wifi__task0, "wifi0", 1024, NULL, 1, &task0, CPU1 );
+
+    vTaskDelay(1000);
 }
 
 
@@ -52,11 +64,9 @@ void loop (){
     // RH_CONSOLE("fb duration: %ld", clock()-cs);
 
     vTaskDelay(2000);
-    // cs = clock();
     rh::app.database.set("/val", cnt++);
-    // RH_CONSOLE("rh duration: %ld", clock()-cs);
-    stringstream name;
-    name<<"img"<<cnt;
-    rh::app.camera.save("/", name.str().c_str());
+    // stringstream name;
+    // name<<"img"<<cnt;
+    // rh::app.camera.save("/", name.str().c_str());
     
 }
