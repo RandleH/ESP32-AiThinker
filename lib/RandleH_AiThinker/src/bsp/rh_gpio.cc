@@ -8,6 +8,7 @@
 
 int  rh_gpio__init   (void){
     pinMode(BOARD_LED_GPIO, OUTPUT);
+    digitalWrite( BOARD_LED_GPIO, 1);
     return 0;
 }
 
@@ -27,6 +28,37 @@ void rh_gpio__toggle ( char gpio, int pin){
 }
 
 
+
+
+#include "dev/rh_led.h"
+#include "app/rh_event.h"
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+void rh_gpio__task0(void*){
+    while(1){
+        EventBits_t ret = xEventGroupWaitBits( rh::app.wifi.event.handler,
+                                               (1<<rh::WIFI__CONNECTED)|(1<<rh::WIFI__NOT_CONNECTED),\
+                                               pdTRUE,           // xClearOnExit
+                                               pdFALSE,          // xWaitForAllBits
+                                               portMAX_DELAY);
+                                            
+        if( ret & (1<<rh::WIFI__CONNECTED) ){ 
+            rh_led__on(BOARD_LED);
+        }
+        if( ret & (1<<rh::WIFI__NOT_CONNECTED) ){
+            rh_led__off(BOARD_LED);
+        }
+    }
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+
 namespace rh{
 
 int GPIO::init(void){
@@ -36,9 +68,20 @@ int GPIO::init(void){
             if( std::get<1>(item)==INPUT )
                 digitalWrite( std::get<0>(item), std::get<2>(item));
         }
-        return 0;
+        goto GPIO_CONFIG_DONE;
     }
-    return rh_gpio__init();
+    rh_gpio__init();
+
+GPIO_CONFIG_DONE:
+    ConfigTask ct;
+    ct.callback = rh_gpio__task0;
+    ct.name     = "gpio[0]: LED";
+    ct.params   = NULL;
+    ct.priority = 1;
+    ct.stack    = 4096;
+    ct.cpu      = 0;
+    this->task.list.push_back( make_pair( nullptr, ct) );
+    return 0;
 }
 
 }

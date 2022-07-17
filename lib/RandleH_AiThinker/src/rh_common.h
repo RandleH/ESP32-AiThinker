@@ -9,6 +9,9 @@ extern "C"{
 #include "esp_log.h"
 #define RH_CONSOLE( format, ...)    ESP_LOGE("RH", format, ##__VA_ARGS__)
 
+#define RH_CPU0    (0)
+#define RH_CPU1    (1)
+
 #define BOARD_LED_GPIO       (33U)
 #define FLUSH_LED_GPIO       (4U)
 
@@ -51,6 +54,7 @@ extern "C"{
 #include <string>
 #include <vector>
 #include <tuple>
+#include <queue>
 using namespace std;
 
 namespace rh{
@@ -113,14 +117,46 @@ public:
     uint8_t  clk_gpio;    
 };
 
+
+class Event{
+public:
+    void*   handler;
+    Event():handler(NULL){}
+    int init(void);
+};
+
+
+class ConfigTask{
+public:
+    ConfigTask(){} 
+    unsigned int   priority;
+    const char*    name;
+    size_t         stack;
+    void*          params;
+    int            cpu;
+    void           (*callback)(void*);       
+};
+
+class Task{
+private:
+public:
+    vector< pair< void*, ConfigTask> > list;
+    Task(){}
+    int init();
+};
+
 class WiFi{
 public:
     WiFi():config(),isConnected(false){}
     ConfigWifi config;
+    Event      event;
+    Task       task;
     bool       isConnected;
     int init(void);
+    
     //...//
 };
+
 
 class Database{
 public:
@@ -144,8 +180,10 @@ public:
 class GPIO{
 public:
     GPIO():config(){}
-    ConfigGPIO config;
-    int init(void);
+    ConfigGPIO  config;
+    Event       event;
+    Task        task;
+    int         init(void);
 };
 
 class SDCard{
@@ -155,14 +193,7 @@ public:
     bool         isInitialized;
 };
 
-#include "app/rh_event.h"
-class Event{
-public:
-    void*   wifi;
-    Event():wifi(NULL){}
-    int init(void);
-    int set(rh::EG_WiFi_t event);
-};
+
 
 class Application{
 public:
@@ -172,8 +203,6 @@ public:
     Camera    camera;
     Database  database;
     WiFi      wifi;
-
-    Event     event;
 
     string    time_compile;
     string    time_real;

@@ -35,23 +35,22 @@ extern "C"{
 #define CPU1   1
 
 void setup(){
-    
     0==rh_sdio__init()? rh_app__load_fromJSON( rh::app ) : rh_app__load_default( rh::app );
     
     0==rh::app.camera.init()   ? RH_CONSOLE("[Y] camera")   : RH_CONSOLE("[N] camera");
     0==rh::app.gpio.init()     ? RH_CONSOLE("[Y] gpio")     : RH_CONSOLE("[N] gpio");
     0==rh::app.wifi.init()     ? RH_CONSOLE("[Y] wifi")     : RH_CONSOLE("[N] wifi");
     0==rh::app.database.init() ? RH_CONSOLE("[Y] database") : RH_CONSOLE("[N] database");
-    0==rh::app.event.init()    ? RH_CONSOLE("[Y] event")    : RH_CONSOLE("[N] event");
-
-
+        
     rh::app.camera.save("/", "img001");
 
-    TaskHandle_t task0;
-
-    xTaskCreatePinnedToCore( rh_wifi__task0, "wifi0", 1024, NULL, 1, &task0, CPU1 );
-
-    vTaskDelay(1000);
+    rh::app.gpio.event.init();
+    rh::app.wifi.event.init();
+    RH_CONSOLE("Wait...");
+    vTaskDelay(5000);
+    rh::app.gpio.task.init();
+    rh::app.wifi.task.init();
+    
 }
 
 
@@ -60,11 +59,11 @@ void loop (){
     static int cnt = 0;
     
     // clock_t cs = clock();
-    // Firebase.RTDB.setInt(&fbdo, "/val", cnt++);
+    Firebase.RTDB.setInt(&fbdo, "/val", cnt++);
     // RH_CONSOLE("fb duration: %ld", clock()-cs);
 
     vTaskDelay(2000);
-    rh::app.database.set("/val", cnt++);
+    // rh::app.database.set("/val", cnt++);
     // stringstream name;
     // name<<"img"<<cnt;
     // rh::app.camera.save("/", name.str().c_str());

@@ -23,6 +23,7 @@ int rh_rtdb__init(const char *host, const char* authkey ){
 
 int rh_rtdb__upload( const char* __pf ){
     Firebase.Storage.upload( &fbdo, "esp32-wifi-monitor.appspot.com", "/sdcard/img001.jpg", mem_storage_type_sd, "/img001.jpg", "image/jpeg");
+    return 0;
 }
 
 

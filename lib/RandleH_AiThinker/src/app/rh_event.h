@@ -5,7 +5,8 @@
 namespace rh{
 
 typedef enum{
-    WIFI__CONNECTED
+    WIFI__CONNECTED     = 0,
+    WIFI__NOT_CONNECTED = 1
 }EG_WiFi_t;
 
 }
