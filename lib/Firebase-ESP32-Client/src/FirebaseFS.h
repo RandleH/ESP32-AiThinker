@@ -56,12 +56,14 @@ static SdFat sd_fat_fs;   //should declare as static here
 * Do not include SdFat.h library in ESP8266 target code which it conflicts with the wrapper one.
 
 */
-
-#if defined(ESP32) || defined(ESP8266)
-#include <SD.h>
-#define DEFAULT_SD_FS SD
-#define CARD_TYPE_SD 1
-#endif
+ #include <SD_MMC.h>
+ #define DEFAULT_SD_FS SD_MMC //For ESP32 SDMMC
+ #define CARD_TYPE_SD_MMC 1 //For ESP32 SDMMC
+// #if defined(ESP32) || defined(ESP8266)
+// #include <SD.h>
+// #define DEFAULT_SD_FS SD
+// #define CARD_TYPE_SD 1
+// #endif
 
 // For ESP32, format SPIFFS or FFat if mounting failed
 #define FORMAT_FLASH_IF_MOUNT_FAILED 1

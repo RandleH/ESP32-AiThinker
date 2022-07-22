@@ -78,6 +78,7 @@ public:
     ConfigWifi():isValid(false){}
     bool     isValid;
     vector< std::pair<string,string> > list;
+    std::pair<string,string>           ap;
 };
 
 class ConfigCamera{
@@ -94,6 +95,10 @@ public:
     bool      isValid;
     const char*    host;
     const char*    auth;
+    const char*    api_key;
+    const char*    email;
+    const char*    password;
+    const char*    bucket_id;
     Allocator alloc;
 };
 
@@ -145,18 +150,37 @@ public:
     int init();
 };
 
+
 class WiFi{
 public:
-    WiFi():config(),isConnected(false){}
+    int connect(const char* ssid, const char* password);
+    int connect(const vector<pair<string,string>>& list); 
+    int wlan   (const pair<string,string>& ap);
+    int wlan   (const char* ssid, const char* password);
+    string     ssid;
+public:
+    WiFi():config(),sta_connected(false),ap_connected(false){}
     ConfigWifi config;
     Event      event;
     Task       task;
-    bool       isConnected;
+    bool       ap_connected;
+    bool       sta_connected;
     int init(void);
-    
+    int begin(void);
+    int register_event(void);
+    int register_task(void);
     //...//
 };
 
+class Server{
+public:
+    Server(){}
+
+    int init(void);
+    int begin(void);
+    int register_event(void);
+    int register_task(void);
+};
 
 class Database{
 public:
@@ -183,7 +207,10 @@ public:
     ConfigGPIO  config;
     Event       event;
     Task        task;
-    int         init(void);
+    int init(void);
+    int begin(void);
+    int register_event(void);
+    int register_task(void);
 };
 
 class SDCard{
@@ -204,15 +231,27 @@ public:
     Database  database;
     WiFi      wifi;
 
+    Server    server;
+
     string    time_compile;
     string    time_real;
 
+    void      print(int(*cb)(char const* format, ...));
 
 };
 
 extern Application app;
 
 }
+
+#include "bsp/rh_gpio.h"
+#include "bsp/rh_sdio.h"
+#include "bsp/rh_wifi.h"
+
+#include "dev/rh_led.h"
+#include "dev/rh_camera.h"
+#include "app/rh_rtdb.h"
+#include "app/rh_app.h"
 
 
 #endif

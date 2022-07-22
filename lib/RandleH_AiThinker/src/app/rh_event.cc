@@ -13,16 +13,6 @@ int Event::init(void){
     return 0;
 }
 
-// int Event::set(rh::EG_WiFi_t event){
-//     EventBits_t bit;
-//     switch(event){
-//         case rh::WIFI__CONNECTED:
-//             bit = 1<<0;break;
-//         default: return 1;
-//     }
 
-//     xEventGroupSetBits( this->handler, bit);
-//     return 0;
-// }
 
 }

@@ -320,3 +320,28 @@ void rh_app__load_default  ( rh::Application& app){
     RH_CONSOLE("%s:", __func__);
 }
 
+
+
+
+namespace rh{
+void Application::print( int(*cb)(char const* format, ...)){
+    
+    cb("[Application Info]\n");
+    cb("[Wi-Fi]\n");
+    cb("\t|--- ap connected  : %d\n", wifi.ap_connected);
+    cb("\t|--- sta connected : %d\n", wifi.sta_connected);
+    cb("\t|--- sta ssid      : %s\n", wifi.ssid.c_str());
+    
+    cb("[Database]\n");
+    cb("\t|--- url       : %s\n", NULL==database.config.host     ?"<none>":database.config.host      );
+    cb("\t|--- secret    : %s\n", NULL==database.config.auth     ?"<none>":database.config.auth      );
+    cb("\t|--- api-key   : %s\n", NULL==database.config.api_key  ?"<none>":database.config.api_key   );
+    cb("\t|--- email     : %s\n", NULL==database.config.email    ?"<none>":database.config.email     );
+    cb("\t|--- password  : %s\n", NULL==database.config.password ?"<none>":database.config.password  );
+    cb("\t|--- bucketID  : %s\n", NULL==database.config.bucket_id?"<none>":database.config.bucket_id );
+    
+}    
+
+
+}
+

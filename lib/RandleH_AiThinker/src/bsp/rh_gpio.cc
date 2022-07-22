@@ -40,15 +40,15 @@ extern "C"{
 void rh_gpio__task0(void*){
     while(1){
         EventBits_t ret = xEventGroupWaitBits( rh::app.wifi.event.handler,
-                                               (1<<rh::WIFI__CONNECTED)|(1<<rh::WIFI__NOT_CONNECTED),\
+                                               (1<<rh::WIFI__STA_CONNECTED)|(1<<rh::WIFI__STA_DISCONNECTED),\
                                                pdTRUE,           // xClearOnExit
                                                pdFALSE,          // xWaitForAllBits
                                                portMAX_DELAY);
                                             
-        if( ret & (1<<rh::WIFI__CONNECTED) ){ 
+        if( ret & (1<<rh::WIFI__STA_CONNECTED) ){
             rh_led__on(BOARD_LED);
         }
-        if( ret & (1<<rh::WIFI__NOT_CONNECTED) ){
+        if( ret & (1<<rh::WIFI__STA_DISCONNECTED) ){
             rh_led__off(BOARD_LED);
         }
     }
@@ -73,6 +73,15 @@ int GPIO::init(void){
     rh_gpio__init();
 
 GPIO_CONFIG_DONE:
+    
+    return 0;
+}
+
+int GPIO::register_event(void){
+    return 0;
+}
+
+int GPIO::register_task(void){
     ConfigTask ct;
     ct.callback = rh_gpio__task0;
     ct.name     = "gpio[0]: LED";
@@ -81,7 +90,8 @@ GPIO_CONFIG_DONE:
     ct.stack    = 4096;
     ct.cpu      = 0;
     this->task.list.push_back( make_pair( nullptr, ct) );
-    return 0;
+    
+    return this->task.init();
 }
 
 }
